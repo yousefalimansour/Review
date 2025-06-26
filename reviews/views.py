@@ -3,8 +3,37 @@ from django.shortcuts import render
 from django.views import View 
 from .forms import ReviewForm
 from django.views.generic.base import TemplateView
+from django.views.generic import ListView ,DetailView
+from django.views.generic.edit import FormView ,CreateView
 from .models import Review
 # Create your views here.
+
+
+
+class ReviewCreateView(CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = "reviews/review.html"
+    success_url = "/thank-you"
+
+class ReviewFormView(FormView):
+    form_class = ReviewForm
+    template_name = "reviews/review.html"
+    success_url = "/thank-you"
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+    
+
+
+class ReviewsList2View(ListView):
+    template_name = "reviews/reviews_list.html"
+    model = Review
+    context_object_name = "reviews"
+
+class SingleDetailReiewView(DetailView):
+    template_name = "reviews/single_review.html"
+    model = Review
 
 class ReviewView(View):
     def get(self,request):
@@ -23,12 +52,9 @@ class ReviewView(View):
             "form":form
         })
 
-
-
 class ThankyouView(TemplateView):
     template_name = "reviews/thank_you.html"
     
-
 class ReviewsListView(TemplateView):
     template_name = "reviews/reviews_list.html"
 
@@ -38,8 +64,6 @@ class ReviewsListView(TemplateView):
         context["reviews"] = reviews 
         return context
     
-
-
 class SingleReiewView(TemplateView):
     template_name = "reviews/single_review.html"
 
@@ -50,8 +74,8 @@ class SingleReiewView(TemplateView):
         context["review"] = selected_review
         return context
     
-
 def review(request):
+
     if request.method =="POST":
         # enterd_name = request.POST["username"]
         form=ReviewForm(request.POST)
