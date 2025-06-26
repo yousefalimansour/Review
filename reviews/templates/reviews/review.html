@@ -1,24 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "reviews/base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+{% block title %}Your Review{% endblock %}
 
-<body>
-    <form action="/" method="POST" >
-        {% csrf_token %}
-        {% comment %} <lable for="username"> Your name </lable>
-        <input id="username" name="username" type="text" > {% endcomment %}
-        <div class="form-control {% if form.user_name.errors %}errors{% endif %}">
-            {{ form.username.lable_tag }}
-            {{ form.username }}
-            {{ form.username.errors }}
+{% block content %}
+    <form action="/" method="POST">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-control {% if field.errors %}errors{% endif %}">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
         </div>
-        <button type="submit">send</button>
+    {% endfor %}
+    <button type="submit">Send</button>
     </form>
-</body>
-
-</html>
+{% endblock %}
