@@ -10,6 +10,15 @@ from .models import Review
 
 
 
+
+class FavoriteReviewView(View):
+    def post(self,request):
+        review_id = request.POST.get("review_id")
+        request.session["favorite_review"] = review_id
+        # Optionally, you can redirect to a specific page or return a response
+        return HttpResponseRedirect("/reviews/" + review_id)
+
+
 class ReviewCreateView(CreateView):
     model = Review
     form_class = ReviewForm
@@ -24,8 +33,6 @@ class ReviewFormView(FormView):
         form.save()
         return super().form_valid(form)
     
-
-
 class ReviewsList2View(ListView):
     template_name = "reviews/reviews_list.html"
     model = Review
@@ -35,6 +42,14 @@ class SingleDetailReiewView(DetailView):
     template_name = "reviews/single_review.html"
     model = Review
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        loaded_review = self.object
+        request = self.request
+        favorite_id = request.session.get("favorite_review")
+        context["is_favorite"] =  favorite_id == str(loaded_review.id)
+        return context
+    
 class ReviewView(View):
     def get(self,request):
         form = ReviewForm()
